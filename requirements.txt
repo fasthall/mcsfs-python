@@ -1,0 +1,4 @@
+secretsharing==0.2.6
+Flask==0.12.2
+boto3==1.4.5
+google_cloud_storage==1.2.0
