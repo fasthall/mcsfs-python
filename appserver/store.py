@@ -1,5 +1,6 @@
 import config
 import boto3
+import uuid
 import os
 from google.cloud import storage
 
@@ -18,16 +19,21 @@ def upload_azure(key, share):
     pass
 
 def download_s3(key):
-    s3_client.Bucket(config.S3_BUCKET).download_file(key, key + '_s3')
-    with open(key + '_s3', 'r') as data:
-        share = data.read()
-    os.remove(key + '_s3')
-    return share
+    tmp_file = str(uuid.uuid4())
+    s3_client.Bucket(config.S3_BUCKET).download_file(key, tmp_file)
+    with open(tmp_file, 'r') as data:
+        data = data.read().split('\n')
+    share = data[0]
+    seed = data[1]
+    os.remove(tmp_file)
+    return share, seed
 
 def download_gcp(key):
     bucket = gcp_client.get_bucket(config.GCP_BUCKET)
     blob = bucket.blob(key)
-    return blob.download_as_string()
+    content = blob.download_as_string()
+    content = content.split('\n')
+    return content[0], content[1]
 
 def download_azure(key):
-    return None
+    return None, None

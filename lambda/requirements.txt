@@ -1,0 +1,2 @@
+requests==2.18.3
+fnvhash==0.1.0
