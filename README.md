@@ -2,5 +2,3 @@
 
 ## TODO
 * threading
-* gochariots
-* azure
