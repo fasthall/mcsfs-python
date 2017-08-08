@@ -3,3 +3,4 @@ Flask==0.12.2
 boto3==1.4.5
 fnvhash==0.1.0
 google_cloud_storage==1.2.0
+azure==2.0.0

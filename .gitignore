@@ -102,3 +102,4 @@ ENV/
 
 config.py
 cred.json
+.DS_Store
