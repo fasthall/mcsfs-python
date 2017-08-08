@@ -23,7 +23,7 @@ def lambda_handler(event, context):
     share = data[0]
     hash = data[1]
 
-    content = {'action': 'Uploaded_S3', 'bucket': bucket, 'key': key, 'share': share}
+    content = {'action': 'Uploaded_S3', 'key': key, 'share': share}
     r1 = gochariots.Record(int(key))
     r1.add('mcsfs', json.dumps(content))
     r1.setHash(int(hash))

@@ -1,0 +1,8 @@
+{
+    "name": "mcsfs-share-uploaded",
+    "version": "0.0.1",
+    "dependencies": {
+        "azure-storage": "2.2.2",
+        "fnv-plus": "1.2.12"
+    }
+}
