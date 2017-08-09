@@ -23,12 +23,12 @@ module.exports = function(context, myBlob) {
             var r1 = new Record(seed);
             var dict = {
                 action: 'Uploaded_Azure',
-                key: event.data.name,
+                key: seed,
                 share: share
             };
             r1.add('mcsfs', JSON.stringify(dict));
-            r1.setHash(hash)
-            gochariots.post(r1)
+            r1.setHash(hash);
+            gochariots.post(r1);
         }
     });
 

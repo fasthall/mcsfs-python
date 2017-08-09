@@ -5,6 +5,8 @@ import time
 import store
 import config
 import gochariots
+import threading
+import Queue
 from secretsharing import PlaintextToHexSecretSharer
 from flask import Flask, request
 
@@ -42,9 +44,15 @@ def mcsfs():
         hash2 = gochariots.getHash(r2)[0]
 
         start = time.time()
-        store.upload_s3(access_key, shares[0] + '\n' + str(hash2))
-        store.upload_gcp(access_key, shares[1] + '\n' + str(hash2))
-        store.upload_azure(access_key, shares[2] + '\n' + str(hash2))
+        s3_thread = threading.Thread(target=store.upload_s3, args=(access_key, shares[0] + '\n' + str(hash2),))
+        gcp_thread = threading.Thread(target=store.upload_gcp, args=(access_key, shares[1] + '\n' + str(hash2),))
+        azure_thread = threading.Thread(target=store.upload_azure, args=(access_key, shares[2] + '\n' + str(hash2),))
+        s3_thread.start()
+        gcp_thread.start()
+        azure_thread.start()
+        s3_thread.join()
+        gcp_thread.join()
+        azure_thread.join()
         
         content = {'action': 'Uploaded', 'elapsed_time': time.time() - start}
         r3 = gochariots.Record(seed)
@@ -64,16 +72,17 @@ def mcsfs():
         r1.add('mcsfs', json.dumps(content))
         gochariots.post(r1)
 
-        share_s3, _ = store.download_s3(key)
-        share_gcp, _ = store.download_gcp(key)
-        share_azure, _ = store.download_azure(key)
+        que = Queue.Queue()
+        s3_thread = threading.Thread(target=store.download_s3, args=(que, key))
+        s3_thread.start()
+        gcp_thread = threading.Thread(target=store.download_gcp, args=(que, key))
+        gcp_thread.start()
+        azure_thread = threading.Thread(target=store.download_azure, args=(que, key))
+        azure_thread.start()
+
         shares = []
-        if share_s3:
-            shares.append(share_s3)
-        if share_gcp:
-            shares.append(share_gcp)
-        if share_azure:
-            shares.append(share_azure)
+        while len(shares) < 2:
+            shares.append(que.get())
 
         content = {'action': 'Downloaded', 'shares': shares}
         r2 = gochariots.Record(seed)

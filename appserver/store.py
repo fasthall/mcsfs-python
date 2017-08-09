@@ -20,21 +20,27 @@ def upload_gcp(key, share):
 def upload_azure(key, share):
     azure_client.create_blob_from_bytes(config.AZURE_CONTAINER, key, share)
 
-def download_s3(key):
+def download_s3(que, key):
     tmp_file = str(uuid.uuid4())
     s3_client.Bucket(config.S3_BUCKET).download_file(key, tmp_file)
     with open(tmp_file, 'r') as data:
         data = data.read().split('\n')
     os.remove(tmp_file)
+    if que != None:
+        que.put(data[0])
     return data[0], data[1]
 
-def download_gcp(key):
+def download_gcp(que, key):
     bucket = gcp_client.get_bucket(config.GCP_BUCKET)
     blob = bucket.blob(key)
     content = blob.download_as_string()
     content = content.split('\n')
+    if que != None:
+        que.put(content[0])
     return content[0], content[1]
 
-def download_azure(key):
-    content = str(block_blob_service.get_blob_to_text(config.AZURE_CONTAINER, key).content).split('\n')
+def download_azure(que, key):
+    content = str(azure_client.get_blob_to_text(config.AZURE_CONTAINER, key).content).split('\n')
+    if que != None:
+        que.put(content[0])
     return content[0], content[1]
