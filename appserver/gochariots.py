@@ -9,10 +9,10 @@ class Record:
     def __init__(self, seed):
         self.tags = {}
         self.seed = seed
-        self.hash = 0
+        self.hash = []
 
-    def setHash(self, hash):
-        self.hash = hash
+    def addHash(self, hash):
+        self.hash.append(hash)
 
     def add(self, key, value):
         self.tags[key] = value

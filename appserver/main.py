@@ -39,7 +39,7 @@ def mcsfs():
         content = {'action': 'Encrypted', 'shares': shares, 'elapsed_time': time.time() - start}
         r2 = gochariots.Record(seed)
         r2.add('mcsfs', json.dumps(content))
-        r2.setHash(gochariots.getHash(r1)[0])
+        r2.addHash(gochariots.getHash(r1)[0])
         gochariots.post(r2)
         hash2 = gochariots.getHash(r2)[0]
 
@@ -57,8 +57,25 @@ def mcsfs():
         content = {'action': 'Uploaded', 'elapsed_time': time.time() - start}
         r3 = gochariots.Record(seed)
         r3.add('mcsfs', json.dumps(content))
-        r3.setHash(hash2)
+        r3.addHash(hash2)
         gochariots.post(r3)
+
+        content = {'action': 'Uploaded_confirmed', 'elapsed_time': time.time() - start}
+        r4 = gochariots.Record(seed)
+        r4.add('mcsfs', json.dumps(content))
+        tmp1 = gochariots.Record(seed)
+        dict1 = {'action': 'Uploaded_S3', 'key': str(seed), 'share': shares[0]}
+        tmp1.add('mcsfs', json.dumps(dict1, sort_keys=True, separators=(',', ':')))
+        tmp2 = gochariots.Record(seed)
+        dict2 = {'action': 'Uploaded_GCP', 'key': str(seed), 'share': shares[1]}
+        tmp2.add('mcsfs', json.dumps(dict2, sort_keys=True, separators=(',', ':')))
+        tmp3 = gochariots.Record(seed)
+        dict3 = {'action': 'Uploaded_Azure', 'key': str(seed), 'share': shares[2]}
+        tmp3.add('mcsfs', json.dumps(dict3, sort_keys=True, separators=(',', ':')))
+        r4.addHash(gochariots.getHash(tmp1)[0])
+        r4.addHash(gochariots.getHash(tmp2)[0])
+        r4.addHash(gochariots.getHash(tmp3)[0])
+        gochariots.post(r4)
 
         return access_key
     elif request.method == 'GET':
@@ -87,7 +104,7 @@ def mcsfs():
         content = {'action': 'Downloaded', 'shares': shares}
         r2 = gochariots.Record(seed)
         r2.add('mcsfs', json.dumps(content))
-        r2.setHash(gochariots.getHash(r1)[0])
+        r2.addHash(gochariots.getHash(r1)[0])
         gochariots.post(r2)
         
         secret = PlaintextToHexSecretSharer.recover_secret(shares)
@@ -95,7 +112,7 @@ def mcsfs():
         content = {'action': 'Decrypted', 'secret_length': len(secret)}
         r3 = gochariots.Record(seed)
         r3.add('mcsfs', json.dumps(content))
-        r3.setHash(gochariots.getHash(r2)[0])
+        r3.addHash(gochariots.getHash(r2)[0])
         gochariots.post(r3)
 
         return secret

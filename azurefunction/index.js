@@ -26,8 +26,8 @@ module.exports = function(context, myBlob) {
                 key: seed,
                 share: share
             };
-            r1.add('mcsfs', JSON.stringify(dict));
-            r1.setHash(hash);
+            r1.add('mcsfs', JSON.stringify(dict, Object.keys(dict).sort()));
+            r1.addHash(hash);
             gochariots.post(r1);
         }
     });

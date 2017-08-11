@@ -30,10 +30,6 @@ exports.post = function(record) {
     }
     
     var body = JSON.stringify(record.toDict())
-    body = body.slice(0, body.indexOf('"prehash"') + 10) + body.slice(body.indexOf('"prehash"') + 11, body.length)
-    body = body.slice(0, body.indexOf('"', body.indexOf('"prehash"') + 10)) + body.slice(body.indexOf('"', body.indexOf('"prehash"') + 10) + 1, body.length)
-    body = body.slice(0, body.indexOf('"seed"') + 7) + body.slice(body.indexOf('"seed"') + 8, body.length)
-    body = body.slice(0, body.indexOf('"', body.indexOf('"seed"') + 7)) + body.slice(body.indexOf('"', body.indexOf('"seed"') + 7) + 1, body.length)
     var request = new http.ClientRequest({
         host: host,
         port: port,

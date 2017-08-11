@@ -25,8 +25,8 @@ def lambda_handler(event, context):
 
     content = {'action': 'Uploaded_S3', 'key': key, 'share': share}
     r1 = gochariots.Record(int(key))
-    r1.add('mcsfs', json.dumps(content))
-    r1.setHash(int(hash))
+    r1.add('mcsfs', json.dumps(content, sort_keys=True, separators=(',', ':')))
+    r1.addHash(int(hash))
     result = gochariots.post(r1)
 
     return 'Record posted'

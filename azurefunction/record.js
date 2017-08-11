@@ -1,11 +1,11 @@
 function Record(seed) {
     this.tags = {};
     this.seed = seed;
-    this.hash = '0';
+    this.hash = [];
 }
 
-Record.prototype.setHash = function(hash) {
-    this.hash = hash;
+Record.prototype.addHash = function(hash) {
+    this.hash.push(hash);
 }
 
 Record.prototype.add = function(key, value) {
@@ -13,7 +13,11 @@ Record.prototype.add = function(key, value) {
 }
 
 Record.prototype.toDict = function() {
-    r = {"seed": this.seed, "prehash": this.hash, "tags": this.tags};
+    if (typeof this.seed == 'number') {
+        r = {"seed": this.seed, "strhash": this.hash, "tags": this.tags};
+    } else if (typeof this.seed == 'string') {
+        r = {"strseed": this.seed, "strhash": this.hash, "tags": this.tags};
+    }
     return r;
 }
 
